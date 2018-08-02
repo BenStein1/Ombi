@@ -35,7 +35,6 @@ export class UpdateComponent implements OnInit {
                     scriptLocation: [x.scriptLocation],
                     windowsService: [x.windowsService],
                     windowsServiceName: [x.windowsServiceName],
-                    testMode: [x.testMode],
                 });
                 this.isWindows = x.isWindows;
                 this.enableUpdateButton = x.autoUpdateEnabled;
@@ -63,7 +62,7 @@ export class UpdateComponent implements OnInit {
             this.notificationService.error("Please check your entered values");
             return;
         }
-        this.enableUpdateButton = form.value.autoUpdateEnabled || form.value.testMode;
+        this.enableUpdateButton = form.value.autoUpdateEnabled;
         this.settingsService.saveUpdateSettings(form.value)
             .subscribe(x => {
                 if (x) {

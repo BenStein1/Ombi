@@ -11,7 +11,7 @@ namespace Ombi.Updater
         ProcessInfo GetCurrentProcess();
         int GetCurrentProcessId();
         ProcessInfo GetProcessById(int id);
-        bool Kill(StartupOptions opts);
+        void Kill(StartupOptions opts);
         void KillAll(string processName);
         void SetPriority(int processId, ProcessPriorityClass priority);
         void WaitForExit(Process process);

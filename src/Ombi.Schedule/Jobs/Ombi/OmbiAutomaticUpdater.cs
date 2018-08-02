@@ -72,7 +72,7 @@ namespace Ombi.Schedule.Jobs.Ombi
             Logger.LogDebug(LoggingEvents.Updater, "Starting Update job");
 
             var settings = await Settings.GetSettingsAsync();
-            if (!settings.AutoUpdateEnabled && !settings.TestMode)
+            if (!settings.AutoUpdateEnabled)
             {
                 Logger.LogDebug(LoggingEvents.Updater, "Auto update is not enabled");
                 return;
@@ -83,7 +83,7 @@ namespace Ombi.Schedule.Jobs.Ombi
 
             var productVersion = AssemblyHelper.GetRuntimeVersion();
             Logger.LogDebug(LoggingEvents.Updater, "Product Version {0}", productVersion);
-            var serverVersion = string.Empty;
+
             try
             {
                 var productArray = GetVersion();
@@ -96,17 +96,13 @@ namespace Ombi.Schedule.Jobs.Ombi
                 Logger.LogDebug(LoggingEvents.Updater, "Branch {0}", branch);
 
                 Logger.LogDebug(LoggingEvents.Updater, "Looking for updates now");
-                //TODO this fails because the branch = featureupdater when it should be feature/updater
                 var updates = await Processor.Process(branch);
                 Logger.LogDebug(LoggingEvents.Updater, "Updates: {0}", updates);
-
-
-                serverVersion = updates.UpdateVersionString;
+                var serverVersion = updates.UpdateVersionString;
 
                 Logger.LogDebug(LoggingEvents.Updater, "Service Version {0}", updates.UpdateVersionString);
 
-
-                if (!serverVersion.Equals(version, StringComparison.CurrentCultureIgnoreCase) || settings.TestMode)
+                if (!serverVersion.Equals(version, StringComparison.CurrentCultureIgnoreCase))
                 {
                     // Let's download the correct zip
                     var desc = RuntimeInformation.OSDescription;
@@ -139,8 +135,7 @@ namespace Ombi.Schedule.Jobs.Ombi
                         if (process == Architecture.Arm)
                         {
                             download = updates.Downloads.FirstOrDefault(x => x.Name.Contains("arm.", CompareOptions.IgnoreCase));
-                        }
-                        else if (process == Architecture.Arm64)
+                        } else if (process == Architecture.Arm64)
                         {
                             download = updates.Downloads.FirstOrDefault(x => x.Name.Contains("arm64.", CompareOptions.IgnoreCase));
                         }
@@ -211,34 +206,32 @@ namespace Ombi.Schedule.Jobs.Ombi
                         updaterExtension = ".exe";
                     }
                     var updaterFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                        "TempUpdate", "updater", $"Ombi.Updater{updaterExtension}");
+                        "TempUpdate", $"Ombi.Updater{updaterExtension}");
 
                     // Make sure the file is an executable
-                    //ExecLinuxCommand($"chmod +x {updaterFile}");
-
+                    ExecLinuxCommand($"chmod +x {updaterFile}");
 
                     // There must be an update
                     var start = new ProcessStartInfo
                     {
-                        UseShellExecute = false,
-                        CreateNoWindow = true, // Ignored if UseShellExecute is set to true
+                        UseShellExecute = true,
+                        CreateNoWindow = false, // Ignored if UseShellExecute is set to true
                         FileName = updaterFile,
                         Arguments = GetArgs(settings),
                         WorkingDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "TempUpdate"),
                     };
-                    //if (settings.Username.HasValue())
-                    //{
-                    //    start.UserName = settings.Username;
-                    //}
-                    //if (settings.Password.HasValue())
-                    //{
-                    //    start.Password = settings.Password.ToSecureString();
-                    //}
-                    using (var proc = new Process { StartInfo = start })
+                    if (settings.Username.HasValue())
                     {
-                        proc.Start();
+                        start.UserName = settings.Username;
                     }
+                    if (settings.Password.HasValue())
+                    {
+                        start.Password = settings.Password.ToSecureString();
+                    }
+                    var proc = new Process { StartInfo = start };
 
+
+                    proc.Start();
 
                     Logger.LogDebug(LoggingEvents.Updater, "Bye bye");
                 }
@@ -261,10 +254,10 @@ namespace Ombi.Schedule.Jobs.Ombi
 
             var sb = new StringBuilder();
             sb.Append($"--applicationPath \"{currentLocation}\" --processname \"{processName}\" ");
-            //if (settings.WindowsService)
-            //{
-            //    sb.Append($"--windowsServiceName \"{settings.WindowsServiceName}\" ");
-            //}
+            if (settings.WindowsService)
+            {
+                sb.Append($"--windowsServiceName \"{settings.WindowsServiceName}\" ");
+            }
             var sb2 = new StringBuilder();
             if (url?.Value.HasValue() ?? false)
             {
