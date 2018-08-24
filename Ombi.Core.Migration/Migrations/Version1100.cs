@@ -300,9 +300,9 @@ namespace Ombi.Core.Migration.Migrations
                     {
                         continue;
                     }
-                    if (req.PosterPath.Contains("https://image.tmdb.org/t/p/w150/"))
+                    if (req.PosterPath.Contains("https://image.tmdb.org/t/p/w154/"))
                     {
-                        var newImg = req.PosterPath.Replace("https://image.tmdb.org/t/p/w150/", string.Empty);
+                        var newImg = req.PosterPath.Replace("https://image.tmdb.org/t/p/w154/", string.Empty);
                         req.PosterPath = newImg;
                     }
                 }

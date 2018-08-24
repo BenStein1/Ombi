@@ -145,7 +145,7 @@ namespace Ombi.UI.Modules
                 Deleted = issue.Deleted,
                 Type = issue.Type,
                 ProviderId = issue.ProviderId,
-                PosterUrl = issue.PosterUrl.Contains("https://image.tmdb.org/t/p/w150/") ? issue.PosterUrl : $"https://image.tmdb.org/t/p/w150/{issue.PosterUrl}",
+                PosterUrl = issue.PosterUrl.Contains("https://image.tmdb.org/t/p/w154/") ? issue.PosterUrl : $"https://image.tmdb.org/t/p/w154/{issue.PosterUrl}",
                 Id = issue.Id
             };
             return View["Details", m];
