@@ -21,7 +21,7 @@ We now have a forums!
 Check it out: [https://forums.ombi.io/](https://forums.ombi.io)
 
 # Features
-Here some of the features Ombi has:
+Here some of the features Ombi has:  
 * All your users to Request Movies, TV Shows (Whole series, whole seasons or even single episodes!) and Albums
 * Easily manage your requests
 * User management system (supports plex.tv accounts and local accounts)
